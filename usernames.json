@@ -1,0 +1,54 @@
+{
+  "@btcfx3": {
+    "sold": false,
+    "price": 10
+  },
+  "@btcfx5": {
+    "sold": false,
+    "price": 10
+  },
+  "@usdex1": {
+    "sold": false,
+    "price": 10
+  },
+  "@ethnx1": {
+    "sold": false,
+    "price": 10
+  },
+  "@euros3": {
+    "sold": false,
+    "price": 10
+  },
+  "@cpius1": {
+    "sold": false,
+    "price": 10
+  },
+  "@purr3": {
+    "sold": false,
+    "price": 20
+  },
+  "@Pufi3": {
+    "sold": false,
+    "price": 20
+  },
+  "@Moch5": {
+    "sold": false,
+    "price": 20
+  },
+  "@Proof": {
+    "sold": false,
+    "price": 300
+  },
+  "@Chamb": {
+    "sold": false,
+    "price": 300
+  },
+  "@strong": {
+    "sold": false,
+    "price": 300
+  },
+  "@claws": {
+    "sold": false,
+    "price": 200
+  }
+}

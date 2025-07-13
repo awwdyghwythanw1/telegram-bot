@@ -1,0 +1,80 @@
+
+
+
+
+from aiogram import Bot, Dispatcher, types
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
+from aiogram.client.bot import DefaultBotProperties
+from aiogram.enums.parse_mode import ParseMode
+from aiogram.filters import Command
+from aiogram.fsm.storage.memory import MemoryStorage
+from aiogram import Router
+import asyncio
+
+TOKEN = "7709394502:AAEK2jdeiDFhMJkpwaw4AN9_TfcVCDydUpM"
+OWNER_ID = 7928004645
+TON_WALLET = "UQAvKW2nLoNs3Tj2P_ZB-yZSH8FzrBcPxlDT0UoZJJjj3h8l"
+bot = Bot(token=TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
+dp = Dispatcher(storage=MemoryStorage())
+router = Router()
+usernames = {
+    "@btcfx3": False,
+    "@btcfx5": False,
+    "@usdex1": False,
+    "@ethnx1": False,
+    "@euros3": False,
+    "@cpius1": False,
+    "@purr3": False,
+    "@Pufi3": False,
+    "@Moch5": False,
+}
+@dp.message_handler(commands=['start'])
+async def start_handler(message: types.Message):
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+
+@dp.message_handler(commands=['start'])
+async def start_handler(message: types.Message):
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="Choose Language / اختر اللغة", callback_data="lang")],
+        [InlineKeyboardButton(text="Buy Usernames", callback_data="buy_usernames")],
+        [InlineKeyboardButton(text="Check Commission", callback_data="commission")],
+    ])
+    await message.answer("Welcome to the Username Escrow Bot!", reply_markup=keyboard)
+    await message.answer("Welcome to the Username Escrow Bot!", reply_markup=keyboard)
+
+@router.callback_query(lambda c: c.data == "commission")
+async def commission_handler(callback: CallbackQuery):
+    await callback.message.answer("The escrow fee is 30 TON.")
+
+@router.callback_query(lambda c: c.data == "buy_usernames")
+async def show_usernames(callback: CallbackQuery):
+    buttons = []
+    for username, sold in usernames.items():
+        label = f"{username} (SOLD)" if sold else username
+        status = "❌" if sold else "✅"
+        buttons.append([InlineKeyboardButton(text=f"{label} {status}", callback_data=f"buy_{username}")])
+    await callback.message.answer("Available usernames:", reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons))
+
+@router.callback_query(lambda c: c.data.startswith("buy_"))
+async def buy_handler(callback: CallbackQuery):
+    username = callback.data.replace("buy_", "")
+    if usernames.get(username):
+        await callback.message.answer("Sorry, this username has already been sold.")
+    else:
+        text = (
+            f"You selected {username}.\n\n"
+            f"To complete your purchase, send 30 TON to the address below:\n"
+f"<b>{TON_WALLET}</b>\n\n"
+            "After payment, you will be contacted by the escrow to deliver the username."
+        )
+        await callback.message.answer(text)
+        await bot.send_message(OWNER_ID, f"User @{callback.from_user.username} selected {username} and is making a payment.")
+        usernames[username] = True
+
+dp.include_router(router)
+
+async def main():
+    await dp.start_polling(bot)
+
+if _name_ == "_main_":
+    asyncio.run(main())

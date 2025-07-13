@@ -1,0 +1,1852 @@
+from aiogram import Bot, Dispatcher, types, Router
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
+from aiogram.client.bot import DefaultBotProperties
+from aiogram.enums.parse_mode import ParseMode
+from aiogram.filters import Command
+from aiogram.fsm.storage.memory import MemoryStorage
+import asyncio
+import json
+import os
+from datetime import datetime
+
+# ====== إعداد البوت ======
+TOKEN = "7709394502:AAEK2jdeiDFhMJkpwaw4AN9_TfcVCDydUpM"
+OWNER_ID = 7928004645
+TON_WALLET = "UQAvKW2nLoNs3Tj2P_ZB-yZSH8FzrBcPxlDT0UoZJJjj3h8l"
+
+# ====== ملفات البيانات ======
+USERNAMES_FILE = "usernames.json"
+SALES_LOG_FILE = "sales_log.json"
+
+default_usernames = {
+    "@btcfx3": False,
+    "@btcfx5": False,
+    "@usdex1": False,
+    "@ethnx1": False,
+    "@euros3": False,
+    "@cpius1": False,
+    "@purr3": False,
+    "@Pufi3": False,
+    "@Moch5": False,
+}
+
+# ====== تحميل البيانات ======
+if os.path.exists(USERNAMES_FILE):
+    with open(USERNAMES_FILE, "r") as f:
+        usernames = json.load(f)
+else:
+    usernames = default_usernames.copy()
+
+if os.path.exists(SALES_LOG_FILE):
+    with open(SALES_LOG_FILE, "r") as f:
+        sales_log = json.load(f)
+else:
+    sales_log = []
+
+def save_usernames():
+    with open(USERNAMES_FILE, "w") as f:
+        json.dump(usernames, f)
+
+def save_sales_log():
+    with open(SALES_LOG_FILE, "w") as f:
+        json.dump(sales_log, f, indent=2)
+
+# ====== إعداد البوت ======
+bot = Bot(token=TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
+dp = Dispatcher(storage=MemoryStorage())
+router = Router()
+
+# ====== /start ======
+@router.message(Command("start"))
+async def start_handler(message: types.Message):
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="🛒 Buy Usernames", callback_data="buy_usernames")],
+        [InlineKeyboardButton(text="📊 Check Commission", callback_data="commission")]
+    ])
+    await message.answer("👋 Welcome! You can purchase available usernames from the seller using this bot.", reply_markup=keyboard)
+
+# ====== العمولة ======
+@router.callback_query(lambda c: c.data == "commission")
+async def commission_handler(callback: CallbackQuery):
+    await callback.answer()
+    await callback.message.answer("💰 The seller's price is: <b>30 TON</b> per username.\nPlease make sure to pay before confirming.")
+
+# ====== عرض اليوزرات ======
+@router.callback_query(lambda c: c.data == "buy_usernames")
+async def show_usernames(callback: CallbackQuery):
+    await callback.answer()
+    buttons = []
+    for username, sold in usernames.items():
+        label = f"{username} (SOLD)" if sold else username
+        status = "❌" if sold else "✅"
+        buttons.append([InlineKeyboardButton(text=f"{label} {status}", callback_data=f"buy_{username}")])
+    await callback.message.answer("🧾 Available usernames:", reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons))
+
+# ====== عند اختيار يوزر ======
+@router.callback_query(lambda c: c.data.startswith("buy_"))
+async def buy_handler(callback: CallbackQuery):
+    await callback.answer()
+    username = callback.data.replace("buy_", "")
+    if usernames.get(username):
+        await callback.message.answer("❌ Sorry, this username has already been sold.")
+        return
+
+    confirm_keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="✅ I have paid", callback_data=f"confirm_{username}")],
+        [InlineKeyboardButton(text="❌ Cancel", callback_data=f"cancel_{username}")]
+    ])
+
+    text = (
+        f"💼 You selected <b>{username}</b>\n\n"
+        f"Please send <b>30 TON</b> to the seller's wallet:\n"
+        f"<code>{TON_WALLET}</code>\n\n"
+        "After sending the payment, click <b>'I have paid'</b> to notify the seller."
+    )
+    await callback.message.answer(text, reply_markup=confirm_keyboard)
+
+# ====== تأكيد الدفع ======
+@router.callback_query(lambda c: c.data.startswitfrom aiogram import Bot, Dispatcher, types, Router
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
+from aiogram.client.bot import DefaultBotProperties
+from aiogram.enums.parse_mode import ParseMode
+from aiogram.filters import Command
+from aiogram.fsm.storage.memory import MemoryStorage
+import asyncio
+import json
+import os
+from datetime import datetime
+
+# ====== إعداد البوت ======
+TOKEN = "7709394502:AAEK2jdeiDFhMJkpwaw4AN9_TfcVCDydUpM"
+OWNER_ID = 7928004645
+TON_WALLET = "UQAvKW2nLoNs3Tj2P_ZB-yZSH8FzrBcPxlDT0UoZJJjj3h8l"
+
+# ====== ملفات البيانات ======
+USERNAMES_FILE = "usernames.json"
+SALES_LOG_FILE = "sales_log.json"
+
+default_usernames = {
+    "@btcfx3": False,
+    "@btcfx5": False,
+    "@usdex1": False,
+    "@ethnx1": False,
+    "@euros3": False,
+    "@cpius1": False,
+    "@purr3": False,
+    "@Pufi3": False,
+    "@Moch5": False,
+}
+
+# ====== تحميل البيانات ======
+if os.path.exists(USERNAMES_FILE):
+    with open(USERNAMES_FILE, "r") as f:
+        usernames = json.load(f)
+else:
+    usernames = default_usernames.copy()
+
+if os.path.exists(SALES_LOG_FILE):
+    with open(SALES_LOG_FILE, "r") as f:
+        sales_log = json.load(f)
+else:
+    sales_log = []
+
+def save_usernames():
+    with open(USERNAMES_FILE, "w") as f:
+        json.dump(usernames, f)
+
+def save_sales_log():
+    with open(SALES_LOG_FILE, "w") as f:
+        json.dump(sales_log, f, indent=2)
+
+# ====== إعداد البوت والراوتر ======
+bot = Bot(token=TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
+dp = Dispatcher(storage=MemoryStorage())
+router = Router()
+
+# ====== تخزين لغات المستخدمين مؤقتاً ======
+user_languages = {}
+
+# ====== نصوص باللغتين ======
+texts = {
+    "en": {
+        "welcome": "👋 Welcome! You can purchase available usernames from the seller using this bot.",
+        "choose_lang": "👋 Please choose your language or continue:",
+        "commission": "💰 The seller's price is: <b>30 TON</b> per username.\nPlease make sure to pay before confirming.",
+        "available_usernames": "🧾 Available usernames:",
+        "already_sold": "❌ Sorry, this username has already been sold.",
+        "select_username": "💼 You selected <b>{username}</b>\n\nPlease send <b>30 TON</b> to the seller's wallet:\n<code>{wallet}</code>\n\nAfter sending the payment, click <b>'I have paid'</b> to notify the seller.",
+        "confirm_payment": "✅ Payment confirmed. The seller has been notified.",
+        "cancelled": "❌ You have canceled the request for {username}.",
+        "add_usage": "❗ Usage: /add @username",
+        "remove_usage": "❗ Usage: /remove @username",
+        "username_exists": "⚠️ Username already exists.",
+        "username_added": "✅ Username {username} added.",
+        "username_removed": "🗑️ Username {username} removed.",
+        "username_not_found": "⚠️ Username not found.",
+        "language_set_en": "✅ Language set to English.",
+        "language_set_ar": "✅ تم تغيير اللغة إلى العربية.",
+    },
+    "ar": {
+        "welcome": "👋 أهلاً! يمكنك شراء أسماء المستخدمين المتاحة من البائع عبر هذا البوت.",
+        "choose_lang": "👋 الرجاء اختيار اللغة أو المتابعة:",
+        "commission": "💰 سعر البائع هو: <b>30 TON</b> لكل اسم مستخدم.\nيرجى التأكد من الدفع قبل التأكيد.",
+        "available_usernames": "🧾 أسماء المستخدمين المتاحة:",
+        "already_sold": "❌ عذراً، هذا الاسم تم بيعه بالفعل.",
+        "select_username": "💼 لقد اخترت <b>{username}</b>\n\nيرجى إرسال <b>30 TON</b> إلى محفظة البائع:\n<code>{wallet}</code>\n\nبعد الدفع، اضغط على <b>'تم الدفع'</b> لإبلاغ البائع.",
+        "confirm_payment": "✅ تم تأكيد الدفع. تم إبلاغ البائع.",
+        "cancelled": "❌ لقد ألغيت الطلب لـ {username}.",
+        "add_usage": "❗ الاستخدام: /add @username",
+        "remove_usage": "❗ الاستخدام: /remove @username",
+        "username_exists": "⚠️ الاسم موجود مسبقاً.",
+        "username_added": "✅ تم إضافة الاسم {username}.",
+        "username_removed": "🗑️ تم حذف الاسم {username}.",
+        "username_not_found": "⚠️ الاسم غير موجود.",
+        "language_set_en": "✅ Language set to English.",
+        "language_set_ar": "✅ تم تغيير اللغة إلى العربية.",
+    }
+}
+
+def get_text(user_id, key, **kwargs):
+    lang = user_languages.get(user_id, "en")
+    return texts[lang][key].format(**kwargs)
+
+# ====== /start مع اختيار اللغة ======
+@router.message(Command("start"))
+async def start_handler(message: types.Message):
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [
+            InlineKeyboardButton(text="🇺🇸 English", callback_data="set_lang_en"),
+            InlineKeyboardButton(text="🇸🇦 العربية", callback_data="set_lang_ar")
+        ],
+        [InlineKeyboardButton(text="🛒 Buy Usernames", callback_data="buy_usernames")],
+        [InlineKeyboardButton(text="📊 Check Commission", callback_data="commission")]
+    ])
+    await message.answer(get_text(message.from_user.id, "choose_lang"), reply_markup=keyboard)
+
+# ====== تغيير اللغة ======
+@router.callback_query(lambda c: c.data == "set_lang_en")
+async def set_lang_en(callback: CallbackQuery):
+    user_languages[callback.from_user.id] = "en"
+    await callback.answer()
+    await callback.message.answer(texts["en"]["language_set_en"])
+
+@router.callback_query(lambda c: c.data == "set_lang_ar")
+async def set_lang_ar(callback: CallbackQuery):
+    user_languages[callback.from_user.id] = "ar"
+    await callback.answer()
+    await callback.message.answer(texts["ar"]["language_set_ar"])
+
+# ====== العمولة ======
+@router.callback_query(lambda c: c.data == "commission")
+async def commission_handler(callback: CallbackQuery):
+    await callback.answer()
+    await callback.message.answer(get_text(callback.from_user.id, "commission"))
+
+# ====== عرض اليوزرات ======
+@router.callback_query(lambda c: c.data == "buy_usernames")
+async def show_usernames(callback: CallbackQuery):
+    await callback.answer()
+    buttons = []
+    for username, sold in usernames.items():
+        label = f"{username} (SOLD)" if sold else username
+        status = "❌" if sold else "✅"
+        buttons.append([InlineKeyboardButton(text=f"{label} {status}", callback_data=f"buy_{username}")])
+    await callback.message.answer(get_text(callback.from_user.id, "available_usernames"), reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons))
+
+# ====== عند اختيار يوزر ======
+@router.callback_query(lambda c: c.data.startswith("buy_"))
+async def buy_handler(callback: CallbackQuery):
+    await callback.answer()
+    username = callback.data.replace("buy_", "")
+    if usernames.get(username):
+        await callback.message.answer(get_text(callback.from_user.id, "already_sold"))
+        return
+
+    confirm_keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="✅ I have paid", callback_data=f"confirm_{username}")],
+        [InlineKeyboardButton(text="❌ Cancel", callback_data=f"cancel_{username}")]
+    ])
+
+    text = get_text(callback.from_user.id, "select_username", username=username, wallet=TON_WALLET)
+    await callback.message.answer(text, reply_markup=confirm_keyboard)
+
+# ====== تأكيد الدفع ======
+@router.callback_query(lambda c: c.data.startswith("confirm_"))
+async def confirm_payment(callback: CallbackQuery):
+    await callback.answer()
+    username = callback.data.replace("confirm_", "")
+
+    if usernames.get(username):
+        await callback.message.answer("⚠️ This username was already marked as sold.")
+        return
+
+    usernames[username] = True
+    save_usernames()
+
+    buyer = callback.from_user.username or f"ID:{callback.from_user.id}"
+    time_now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    sales_log.append({
+        "username": username,
+        "buyer": buyer,
+        "time": time_now
+    })
+    save_sales_log()
+
+    await callback.message.answer(get_text(callback.from_user.id, "confirm_payment"))
+    await bot.send_message(OWNER_ID, f"📢 Buyer @{buyer} confirmed payment for {username} at {time_now}.")
+
+# ====== إلغاء الطلب ======
+@router.callback_query(lambda c: c.data.startswith("cancel_"))
+async def cancel_handler(callback: CallbackQuery):
+    await callback.answer()
+    username = callback.data.replace("cancel_", "")
+    await callback.message.answer(get_text(callback.from_user.id, "cancelled", username=username))
+
+# ====== أمر /add ======
+@router.message(Command("add"))
+async def add_username_handler(message: types.Message):
+    if message.from_user.id != OWNER_ID:
+        return
+
+    parts = message.text.strip().split()
+    if len(parts) != 2 or not parts[1].startswith("@"):
+        await message.answer(get_text(message.from_user.id, "add_usage"))
+        return
+
+    new_username = parts[1]
+    if new_username in usernames:
+        await message.answer(get_text(message.from_user.id, "username_exists"))
+    else:
+        usernames[new_username] = False
+        save_usernames()
+        await message.answer(get_text(message.from_user.id, "username_added", username=new_username))
+
+# ====== أمر /remove ======
+@router.message(Command("remove"))
+async def remove_username_handler(message: types.Message):
+    if message.from_user.id != OWNER_ID:
+        return
+
+    parts = message.text.strip().split()
+    if len(parts) != 2 or not parts[1].startswith("@"):
+        await message.answer(get_text(message.from_user.id, "remove_usage"))
+        return
+
+    target_username = parts[1]
+    if target_username in usernames:
+        del usernames[target_username]
+        save_usernames()
+        await message.answer(get_text(message.from_user.id, "username_removed", username=target_username))
+    else:
+        await message.answer(get_text(message.from_user.id, "username_not_found"))
+
+# ====== تسجيل الراوتر ======
+dp.include_router(router)
+
+# ====== تشغيل البوت ======
+async def main():
+    await dp.start_polling(bot)
+
+if __name__ == "__main__":
+    asyncio.run(main())("confirm_"))
+async def confirm_payment(callback: CallbackQuery):
+    await callback.answer()
+    username = callback.data.replace("confirm_", "")
+
+    if usernames.get(username):
+        await callback.message.answer("⚠️ This username was already marked as sold.")
+        return
+
+    usernames[username] = True
+    save_usernames()
+
+    buyer = callback.from_user.username or f"ID:{callback.from_user.id}"
+    time_now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    sales_log.append({
+        "username": username,
+        "buyer": buyer,
+        "time": time_now
+    })
+    save_sales_log()
+
+    await callback.message.answer("✅ Payment confirmed. The seller has been notified.")
+    await bot.send_message(OWNER_ID, f"📢 Buyer @{
+from aiogram import Bot, Dispatcher, types, Router
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
+from aiogram.client.bot import DefaultBotProperties
+from aiogram.enums.parse_mode import ParseMode
+from aiogram.filters import Command
+from aiogram.fsm.storage.memory import MemoryStorage
+import asyncio
+import json
+import os
+from datetime import datetime
+
+# ====== إعداد البوت ======
+TOKEN = "7709394502:AAEK2jdeiDFhMJkpwaw4AN9_TfcVCDydUpM"
+OWNER_ID = 7928004645
+TON_WALLET = "UQAvKW2nLoNs3Tj2P_ZB-yZSH8FzrBcPxlDT0UoZJJjj3h8l"
+
+# ====== ملفات البيانات ======
+USERNAMES_FILE = "usernames.json"
+SALES_LOG_FILE = "sales_log.json"
+
+default_usernames = {
+    "@btcfx3": False,
+    "@btcfx5": False,
+    "@usdex1": False,
+    "@ethnx1": False,
+    "@euros3": False,
+    "@cpius1": False,
+    "@purr3": False,
+    "@Pufi3": False,
+    "@Moch5": False,
+}
+
+# ====== تحميل البيانات ======
+if os.path.exists(USERNAMES_FILE):
+    with open(USERNAMES_FILE, "r") as f:
+        usernames = json.load(f)
+else:
+    usernames = default_usernames.copy()
+
+if os.path.exists(SALES_LOG_FILE):
+    with open(SALES_LOG_FILE, "r") as f:
+        sales_log = json.load(f)
+else:
+    sales_log = []
+
+def save_usernames():
+    with open(USERNAMES_FILE, "w") as f:
+        json.dump(usernames, f)
+
+def save_sales_log():
+    with open(SALES_LOG_FILE, "w") as f:
+        json.dump(sales_log, f, indent=2)
+
+# ====== إعداد البوت والراوتر ======
+bot = Bot(token=TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
+dp = Dispatcher(storage=MemoryStorage())
+router = Router()
+
+# ====== تخزين لغات المستخدمين مؤقتاً ======
+user_languages = {}
+
+# ====== نصوص باللغتين ======
+texts = {
+    "en": {
+        "welcome": "👋 Welcome! You can purchase available usernames from the seller using this bot.",
+        "choose_lang": "👋 Please choose your language or continue:",
+        "commission": "💰 The seller's price is: <b>30 TON</b> per username.\nPlease make sure to pay before confirming.",
+        "available_usernames": "🧾 Available usernames:",
+        "already_sold": "❌ Sorry, this username has already been sold.",
+        "select_username": "💼 You selected <b>{username}</b>\n\nPlease send <b>30 TON</b> to the seller's wallet:\n<code>{wallet}</code>\n\nAfter sending the payment, click <b>'I have paid'</b> to notify the seller.",
+        "confirm_payment": "✅ Payment confirmed. The seller has been notified.",
+        "cancelled": "❌ You have canceled the request for {username}.",
+        "add_usage": "❗ Usage: /add @username",
+        "remove_usage": "❗ Usage: /remove @username",
+        "username_exists": "⚠️ Username already exists.",
+        "username_added": "✅ Username {username} added.",
+        "username_removed": "🗑️ Username {username} removed.",
+        "username_not_found": "⚠️ Username not found.",
+        "language_set_en": "✅ Language set to English.",
+        "language_set_ar": "✅ تم تغيير اللغة إلى العربية.",
+    },
+    "ar": {
+        "welcome": "👋 أهلاً! يمكنك شراء أسماء المستخدمين المتاحة من البائع عبر هذا البوت.",
+        "choose_lang": "👋 الرجاء اختيار اللغة أو المتابعة:",
+        "commission": "💰 سعر البائع هو: <b>30 TON</b> لكل اسم مستخدم.\nيرجى التأكد من الدفع قبل التأكيد.",
+        "available_usernames": "🧾 أسماء المستخدمين المتاحة:",
+        "already_sold": "❌ عذراً، هذا الاسم تم بيعه بالفعل.",
+        "select_username": "💼 لقد اخترت <b>{username}</b>\n\nيرجى إرسال <b>30 TON</b> إلى محفظة البائع:\n<code>{wallet}</code>\n\nبعد الدفع، اضغط على <b>'تم الدفع'</b> لإبلاغ البائع.",
+        "confirm_payment": "✅ تم تأكيد الدفع. تم إبلاغ البائع.",
+        "cancelled": "❌ لقد ألغيت الطلب لـ {username}.",
+        "add_usage": "❗ الاستخدام: /add @username",
+        "remove_usage": "❗ الاستخدام: /remove @username",
+        "username_exists": "⚠️ الاسم موجود مسبقاً.",
+        "username_added": "✅ تم إضافة الاسم {username}.",
+        "username_removed": "🗑️ تم حذف الاسم {username}.",
+        "username_not_found": "⚠️ الاسم غير موجود.",
+        "language_set_en": "✅ Language set to English.",
+        "language_set_ar": "✅ تم تغيير اللغة إلى العربية.",
+    }
+}
+
+def get_text(user_id, key, **kwargs):
+    lang = user_languages.get(user_id, "en")
+    return texts[lang][key].format(**kwargs)
+
+# ====== /start مع اختيار اللغة ======
+@router.message(Command("start"))
+async def start_handler(message: types.Message):
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [
+            InlineKeyboardButton(text="🇺🇸 English", callback_data="set_lang_en"),
+            InlineKeyboardButton(text="🇸🇦 العربية", callback_data="set_lang_ar")
+        ],
+        [InlineKeyboardButton(text="🛒 Buy Usernames", callback_data="buy_usernames")],
+        [InlineKeyboardButton(text="📊 Check Commission", callback_data="commission")]
+    ])
+    await message.answer(get_text(message.from_user.id, "choose_lang"), reply_markup=keyboard)
+
+# ====== تغيير اللغة ======
+@router.callback_query(lambda c: c.data == "set_lang_en")
+async def set_lang_en(callback: CallbackQuery):
+    user_languages[callback.from_user.id] = "en"
+    await callback.answer()
+    await callback.message.answer(texts["en"]["language_set_en"])
+
+@router.callback_query(lambda c: c.data == "set_lang_ar")
+async def set_lang_ar(callback: CallbackQuery):
+    user_languages[callback.from_user.id] = "ar"
+    await callback.answer()
+    await callback.message.answer(texts["ar"]["language_set_ar"])
+
+# ====== العمولة ======
+@router.callback_query(lambda c: c.data == "commission")
+async def commission_handler(callback: CallbackQuery):
+    await callback.answer()
+    await callback.message.answer(get_text(callback.from_user.id, "commission"))
+
+# ====== عرض اليوزرات ======
+@router.callback_query(lambda c: c.data == "buy_usernames")
+async def show_usernames(callback: CallbackQuery):
+    await callback.answer()
+    buttons = []
+    for username, sold in usernames.items():
+        label = f"{username} (SOLD)" if sold else username
+        status = "❌" if sold else "✅"
+        buttons.append([InlineKeyboardButton(text=f"{label} {status}", callback_data=f"buy_{username}")])
+    await callback.message.answer(get_text(callback.from_user.id, "available_usernames"), reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons))
+
+# ====== عند اختيار يوزر ======
+@router.callback_query(lambda c: c.data.startswith("buy_"))
+async def buy_handler(callback: CallbackQuery):
+    await callback.answer()
+    username = callback.data.replace("buy_", "")
+    if usernames.get(username):
+        await callback.message.answer(get_text(callback.from_user.id, "already_sold"))
+        return
+
+    confirm_keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="✅ I have paid", callback_data=f"confirm_{username}")],
+        [InlineKeyboardButton(text="❌ Cancel", callback_data=f"cancel_{username}")]
+    ])
+
+    text = get_text(callback.from_user.id, "select_username", username=username, wallet=TON_WALLET)
+    await callback.message.answer(text, reply_markup=confirm_keyboard)
+
+# ====== تأكيد الدفع ======
+@router.callback_query(lambda c: c.data.startswith("confirm_"))
+async def confirm_payment(callback: CallbackQuery):
+    await callback.answer()
+    username = callback.data.replace("confirm_", "")
+
+    if usernames.get(username):
+        await callback.message.answer("⚠️ This username was already marked as sold.")
+        return
+
+    usernames[username] = True
+    save_usernames()
+
+    buyer = callback.from_user.username or f"ID:{callback.from_user.id}"
+    time_now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    sales_log.append({
+        "username": username,
+        "buyer": buyer,
+        "time": time_now
+    })
+    save_sales_log()
+
+    await callback.message.answer(get_text(callback.from_user.id, "confirm_payment"))
+    await bot.send_message(OWNER_ID, f"📢 Buyer @{buyer} confirmed payment for {username} at {time_now}.")
+
+# ====== إلغاء الطلب ======
+@router.callback_query(lambda c: c.data.startswith("cancel_"))
+async def cancel_handler(callback: CallbackQuery):
+    await callback.answer()
+    username = callback.data.replace("cancel_", "")
+    await callback.message.answer(get_text(callback.from_user.id, "cancelled", username=username))
+
+# ====== أمر /add ======
+@router.message(Command("add"))
+async def add_username_handler(message: types.Message):
+    if message.from_user.id != OWNER_ID:
+        return
+
+    parts = message.text.strip().split()
+    if len(parts) != 2 or not parts[1].startswith("@"):
+        await message.answer(get_text(message.from_user.id, "add_usage"))
+        return
+
+    new_username = parts[1]
+    if new_username in usernames:
+        await message.answer(get_text(message.from_user.id, "username_exists"))
+    else:
+        usernames[new_username] = False
+        save_usernames()
+        await message.answer(get_text(message.from_user.id, "username_added", username=new_username))
+
+# ====== أمر /remove ======
+@router.message(Command("remove"))
+async def remove_username_handler(message: types.Message):
+    if message.from_user.id != OWNER_ID:
+        return
+
+    parts = message.text.strip().split()
+    if len(parts) != 2 or not parts[1].startswith("@"):
+        await message.answer(get_text(message.from_user.id, "remove_usage"))
+        return
+
+    target_username = parts[1]
+    if target_username in usernames:
+        del usernames[target_username]
+        save_usernames()
+        await message.answer(get_text(message.from_user.id, "username_removed", username=target_username))
+    else:
+        await message.answer(get_text(message.from_user.id, "username_not_found"))
+
+# ====== تسجيل الراوتر ======
+dp.include_router(routefrom aiogram import Bot, Dispatcher, types, Router
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
+from aiogram.client.bot import DefaultBotProperties
+from aiogram.enums.parse_mode import ParseMode
+from aiogram.filters import Command
+from aiogram.fsm.storage.memory import MemoryStorage
+import asyncio
+import json
+import os
+from datetime import datetime
+
+# ====== إعداد البوت ======
+TOKEN = "7709394502:AAEK2jdeiDFhMJkpwaw4AN9_TfcVCDydUpM"
+OWNER_ID = 7928004645
+TON_WALLET = "UQAvKW2nLoNs3Tj2P_ZB-yZSH8FzrBcPxlDT0UoZJJjj3h8l"
+
+# ====== ملفات البيانات ======
+USERNAMES_FILE = "usernames.json"
+SALES_LOG_FILE = "sales_log.json"
+
+default_usernames = {
+    "@btcfx3": False,
+    "@btcfx5": False,
+    "@usdex1": False,
+    "@ethnx1": False,
+    "@euros3": False,
+    "@cpius1": False,
+    "@purr3": False,
+    "@Pufi3": False,
+    "@Moch5": False,
+}
+
+# ====== تحميل البيانات ======
+if os.path.exists(USERNAMES_FILE):
+    with open(USERNAMES_FILE, "r") as f:
+        usernames = json.load(f)
+else:
+    usernames = default_usernames.copy()
+
+if os.path.exists(SALES_LOG_FILE):
+    with open(SALES_LOG_FILE, "r") as f:
+        sales_log = json.load(f)
+else:
+    sales_log = []
+
+def save_usernames():
+    with open(USERNAMES_FILE, "w") as f:
+        json.dump(usernames, f)
+
+def save_sales_log():
+    with open(SALES_LOG_FILE, "w") as f:
+        json.dump(sales_log, f, indent=2)
+
+# ====== إعداد البوت والراوتر ======
+bot = Bot(token=TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
+dp = Dispatcher(storage=MemoryStorage())
+router = Router()
+
+# ====== تخزين لغات المستخدمين مؤقتاً ======
+user_languages = {}
+
+# ====== نصوص باللغتين ======
+texts = {
+    "en": {
+        "welcome": "👋 Welcome! You can purchase available usernames from the seller using this bot.",
+        "choose_lang": "👋 Please choose your language or continue:",
+        "commission": "💰 The seller's price is: <b>30 TON</b> per username.\nPlease make sure to pay before confirming.",
+        "available_usernames": "🧾 Available usernames:",
+        "already_sold": "❌ Sorry, this username has already been sold.",
+        "select_username": "💼 You selected <b>{username}</b>\n\nPlease send <b>30 TON</b> to the seller's wallet:\n<code>{wallet}</code>\n\nAfter sending the payment, click <b>'I have paid'</b> to notify the seller.",
+        "confirm_payment": "✅ Payment confirmed. The seller has been notified.",
+        "cancelled": "❌ You have canceled the request for {username}.",
+        "add_usage": "❗ Usage: /add @username",
+        "remove_usage": "❗ Usage: /remove @username",
+        "username_exists": "⚠️ Username already exists.",
+        "username_added": "✅ Username {username} added.",
+        "username_removed": "🗑️ Username {username} removed.",
+        "username_not_found": "⚠️ Username not found.",
+        "language_set_en": "✅ Language set to English.",
+        "language_set_ar": "✅ تم تغيير اللغة إلى العربية.",
+    },
+    "ar": {
+        "welcome": "👋 أهلاً! يمكنك شراء أسماء المستخدمين المتاحة من البائع عبر هذا البوت.",
+        "choose_lang": "👋 الرجاء اختيار اللغة أو المتابعة:",
+        "commission": "💰 سعر البائع هو: <b>30 TON</b> لكل اسم مستخدم.\nيرجى التأكد من الدفع قبل التأكيد.",
+        "available_usernames": "🧾 أسماء المستخدمين المتاحة:",
+        "already_sold": "❌ عذراً، هذا الاسم تم بيعه بالفعل.",
+        "select_username": "💼 لقد اخترت <b>{username}</b>\n\nيرجى إرسال <b>30 TON</b> إلى محفظة البائع:\n<code>{wallet}</code>\n\nبعد الدفع، اضغط على <b>'تم الدفع'</b> لإبلاغ البائع.",
+        "confirm_payment": "✅ تم تأكيد الدفع. تم إبلاغ البائع.",
+        "cancelled": "❌ لقد ألغيت الطلب لـ {username}.",
+        "add_usage": "❗ الاستخدام: /add @username",
+        "remove_usage": "❗ الاستخدام: /remove @username",
+        "username_exists": "⚠️ الاسم موجود مسبقاً.",
+        "username_added": "✅ تم إضافة الاسم {username}.",
+        "username_removed": "🗑️ تم حذف الاسم {username}.",
+        "username_not_found": "⚠️ الاسم غير موجود.",
+        "language_set_en": "✅ Language set to English.",
+        "language_set_ar": "✅ تم تغيير اللغة إلى العربية.",
+    }
+}
+
+def get_text(user_id, key, **kwargs):
+    lang = user_languages.get(user_id, "en")
+    return texts[lang][key].format(**kwargs)
+
+# ====== /start مع اختيار اللغة ======
+@router.message(Command("start"))
+async def start_handler(message: types.Message):
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [
+            InlineKeyboardButton(text="🇺🇸 English", callback_data="set_lang_en"),
+            InlineKeyboardButton(text="🇸🇦 العربية", callback_data="set_lang_ar")
+        ],
+        [InlineKeyboardButton(text="🛒 Buy Usernames", callback_data="buy_usernames")],
+        [InlineKeyboardButton(text="📊 Check Commission", callback_data="commission")]
+    ])
+    await message.answer(get_text(message.from_user.id, "choose_lang"), reply_markup=keyboard)
+
+# ====== تغيير اللغة ======
+@router.callback_query(lambda c: c.data == "set_lang_en")
+async def set_lang_en(callback: CallbackQuery):
+    user_languages[callback.from_user.id] = "en"
+    await callback.answer()
+    await callback.message.answer(texts["en"]["language_set_en"])
+
+@router.callback_query(lambda c: c.data == "set_lang_ar")
+async def set_lang_ar(callback: CallbackQuery):
+    user_languages[callback.from_user.id] = "ar"
+    await callback.answer()
+    await callback.message.answer(texts["ar"]["language_set_ar"])
+
+# ====== العمولة ======
+@router.callback_query(lambda c: c.data == "commission")
+async def commission_handler(callback: CallbackQuery):
+    await callback.answer()
+    await callback.message.answer(get_text(callback.from_user.id, "commission"))
+
+# ====== عرض اليوزرات ======
+@router.callback_query(lambda c: c.data == "buy_usernames")
+async def show_usernames(callback: CallbackQuery):
+    await callback.answer()
+    buttons = []
+    for username, sold in usernames.items():
+        label = f"{username} (SOLD)" if sold else username
+        status = "❌" if sold else "✅"
+        buttons.append([InlineKeyboardButton(text=f"{label} {status}", callback_data=f"buy_{username}")])
+    await callback.message.answer(get_text(callback.from_user.id, "available_usernames"), reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons))
+
+# ====== عند اختيار يوزر ======
+@router.callback_query(lambda c: c.data.startswith("buy_"))
+async def buy_handler(callback: CallbackQuery):
+    await callback.answer()
+    username = callback.data.replace("buy_", "")
+    if usernames.get(username):
+        await callback.message.answer(get_text(callback.from_user.id, "already_sold"))
+        return
+
+    confirm_keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="✅ I have paid", callback_data=f"confirm_{username}")],
+        [InlineKeyboardButton(text="❌ Cancel", callback_data=f"cancel_{username}")]
+    ])
+
+    text = get_text(callback.from_user.id, "select_username", username=username, wallet=TON_WALLET)
+    await callback.message.answer(text, reply_markup=confirm_keyboard)
+
+# ====== تأكيد الدفع ======
+@router.callback_query(lambda c: c.data.startswith("confirm_"))
+async def confirm_payment(callback: CallbackQuery):
+    await callback.answer()
+    username = callback.data.replace("confirm_", "")
+
+    if usernames.get(username):
+        await callback.message.answer("⚠️ This username was already marked as sold.")
+        return
+
+    usernames[username] = True
+    save_usernames()
+
+    buyer = callback.from_user.username or f"ID:{callback.from_user.id}"
+    time_now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    sales_log.append({
+        "username": username,
+        "buyer": buyer,
+        "time": time_now
+    })
+    save_sales_log()
+
+    await callback.message.answer(get_text(callback.from_user.id, "confirm_payment"))
+    await bot.send_message(OWNER_ID, f"📢 Buyer @{buyer} confirmed payment for {username} at {time_now}.")
+
+# ====== إلغاء الطلب ======
+@router.callback_query(lambda c: c.data.startswith("cancel_"))
+async def cancel_handler(callback: CallbackQuery):
+    await callback.answer()
+    username = callback.data.replace("cancel_", "")
+    await callback.message.answer(get_text(callback.from_user.id, "cancelled", username=username))
+
+# ====== أمر /add ======
+@router.message(Command("add"))
+async def add_username_handler(message: types.Message):
+    if message.from_user.id != OWNER_ID:
+        return
+
+    parts = message.text.strip().split()
+    if len(parts) != 2 or not parts[1].startswith("@"):
+        await message.answer(get_text(message.from_user.id, "add_usage"))
+        return
+
+    new_username = parts[1]
+    if new_username in usernames:
+        await message.answer(get_text(message.from_user.id, "username_exists"))
+    else:
+        usernames[new_username] = False
+        save_usernames()
+        await message.answer(get_text(message.from_user.id, "username_added", username=new_username))
+
+# ====== أمر /remove ======
+@router.message(Command("remove"))
+async def remove_username_handler(message: types.Message):
+    if message.from_user.id != OWNER_ID:
+        return
+
+    parts = message.text.strip().split()
+    if len(parts) != 2 or not parts[1].startswith("@"):
+        await message.answer(get_text(message.from_user.id, "remove_usage"))
+        return
+
+    target_username = parts[1]
+    if target_username in usernames:
+        del usernames[target_username]
+        save_usernames()
+        await message.answer(get_text(message.from_user.id, "username_removed", username=target_username))
+    else:
+        await message.answer(get_text(message.from_user.id, "username_not_found"))
+
+# ====== تسجيل الراوتر ======
+dp.include_router(router)
+
+# ====== تشغيل البوت ======
+async def main():
+    await dp.start_polling(bot)
+
+if __name__ == "__main__":
+    asyncio.run(main())from aiogram import Bot, Dispatcher, types, Router
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
+from aiogram.client.bot import DefaultBotProperties
+from aiogram.enums.parse_mode import ParseMode
+from aiogram.filters import Command
+from aiogram.fsm.storage.memory import MemoryStorage
+import asyncio
+import json
+import os
+from datetime import datetime
+
+# ====== إعداد البوت ======
+TOKEN = "7709394502:AAEK2jdeiDFhMJkpwaw4AN9_TfcVCDydUpM"
+OWNER_ID = 7928004645
+TON_WALLET = "UQAvKW2nLoNs3Tj2P_ZB-yZSH8FzrBcPxlDT0UoZJJjj3h8l"
+
+# ====== ملفات البيانات ======
+USERNAMES_FILE = "usernames.json"
+SALES_LOG_FILE = "sales_log.json"
+
+default_usernames = {
+    "@btcfx3": False,
+    "@btcfx5": False,
+    "@usdex1": False,
+    "@ethnx1": False,
+    "@euros3": False,
+    "@cpius1": False,
+    "@purr3": False,
+    "@Pufi3": False,
+    "@Moch5": False,
+}
+
+# ====== تحميل البيانات ======
+if os.path.exists(USERNAMES_FILE):
+    with open(USERNAMES_FILE, "r") as f:
+        usernames = json.load(f)
+else:
+    usernames = default_usernames.copy()
+
+if os.path.exists(SALES_LOG_FILE):
+    with open(SALES_LOG_FILE, "r") as f:
+        sales_log = json.load(f)
+else:
+    sales_log = []
+
+def save_usernames():
+    with open(USERNAMES_FILE, "w") as f:
+        json.dump(usernames, f)
+
+def save_sales_log():
+    with open(SALES_LOG_FILE, "w") as f:
+        json.dump(sales_log, f, indent=2)
+
+# ====== إعداد البوت والراوتر ======
+bot = Bot(token=TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
+dp = Dispatcher(storage=MemoryStorage())
+router = Router()
+
+# ====== تخزين لغات المستخدمين مؤقتاً ======
+user_languages = {}
+
+# ====== نصوص باللغتين ======
+texts = {
+    "en": {
+        "welcome": "👋 Welcome! You can purchase available usernames from the seller using this bot.",
+        "choose_lang": "👋 Please choose your language or continue:",
+        "commission": "💰 The seller's price is: <b>30 TON</b> per username.\nPlease make sure to pay before confirming.",
+        "available_usernames": "🧾 Available usernames:",
+        "already_sold": "❌ Sorry, this username has already been sold.",
+        "select_username": "💼 You selected <b>{username}</b>\n\nPlease send <b>30 TON</b> to the seller's wallet:\n<code>{wallet}</code>\n\nAfter sending the payment, click <b>'I have paid'</b> to notify the seller.",
+        "confirm_payment": "✅ Payment confirmed. The seller has been notified.",
+        "cancelled": "❌ You have canceled the request for {username}.",
+        "add_usage": "❗ Usage: /add @username",
+        "remove_usage": "❗ Usage: /remove @username",
+        "username_exists": "⚠️ Username already exists.",
+        "username_added": "✅ Username {username} added.",
+        "username_removed": "🗑️ Username {username} removed.",
+        "username_not_found": "⚠️ Username not found.",
+        "language_set_en": "✅ Language set to English.",
+        "language_set_ar": "✅ تم تغيير اللغة إلى العربية.",
+    },
+    "ar": {
+        "welcome": "👋 أهلاً! يمكنك شراء أسماء المستخدمين المتاحة من البائع عبر هذا البوت.",
+        "choose_lang": "👋 الرجاء اختيار اللغة أو المتابعة:",
+        "commission": "💰 سعر البائع هو: <b>30 TON</b> لكل اسم مستخدم.\nيرجى التأكد من الدفع قبل التأكيد.",
+        "available_usernames": "🧾 أسماء المستخدمين المتاحة:",
+        "already_sold": "❌ عذراً، هذا الاسم تم بيعه بالفعل.",
+        "select_username": "💼 لقد اخترت <b>{username}</b>\n\nيرجى إرسال <b>30 TON</b> إلى محفظة البائع:\n<code>{wallet}</code>\n\nبعد الدفع، اضغط على <b>'تم الدفع'</b> لإبلاغ البائع.",
+        "confirm_payment": "✅ تم تأكيد الدفع. تم إبلاغ البائع.",
+        "cancelled": "❌ لقد ألغيت الطلب لـ {username}.",
+        "add_usage": "❗ الاستخدام: /add @username",
+        "remove_usage": "❗ الاستخدام: /remove @username",
+        "username_exists": "⚠️ الاسم موجود مسبقاً.",
+        "username_added": "✅ تم إضافة الاسم {username}.",
+        "username_removed": "🗑️ تم حذف الاسم {username}.",
+        "username_not_found": "⚠️ الاسم غير موجود.",
+        "language_set_en": "✅ Language set to English.",
+        "language_set_ar": "✅ تم تغيير اللغة إلى العربية.",
+    }
+}
+
+def get_text(user_id, key, **kwargs):
+    lang = user_languages.get(user_id, "en")
+    return texts[lang][key].format(**kwargs)
+
+# ====== /start مع اختيار اللغة ======
+@router.message(Command("start"))
+async def start_handler(message: types.Message):
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [
+            InlineKeyboardButton(text="🇺🇸 English", callback_data="set_lang_en"),
+            InlineKeyboardButton(text="🇸🇦 العربية", callback_data="set_lang_ar")
+        ],
+        [InlineKeyboardButton(text="🛒 Buy Usernames", callback_data="buy_usernames")],
+        [InlineKeyboardButton(text="📊 Check Commission", callback_data="commission")]
+    ])
+    await message.answer(get_text(message.from_user.id, "choose_lang"), reply_markup=keyboard)
+
+# ====== تغيير اللغة ======
+@router.callback_query(lambda c: c.data == "set_lang_en")
+async def set_lang_en(callback: CallbackQuery):
+    user_languages[callback.from_user.id] = "en"
+    await callback.answer()
+    await callback.message.answer(texts["en"]["language_set_en"])
+
+@router.callback_query(lambda c: c.data == "set_lang_ar")
+async def set_lang_ar(callback: CallbackQuery):
+    user_languages[callback.from_user.id] = "ar"
+    await callback.answer()
+    await callback.message.answer(texts["ar"]["language_set_ar"])
+
+# ====== العمولة ======
+@router.callback_query(lambda c: c.data == "commission")
+async def commission_handler(callback: CallbackQuery):
+    await callback.answer()
+    await callback.message.answer(get_text(callback.from_user.id, "commission"))
+
+# ====== عرض اليوزرات ======
+@router.callback_query(lambda c: c.data == "buy_usernames")
+async def show_usernames(callback: CallbackQuery):
+    await callback.answer()
+    buttons = []
+    for username, sold in usernames.items():
+        label = f"{username} (SOLD)" if sold else username
+        status = "❌" if sold else "✅"
+        buttons.append([InlineKeyboardButton(text=f"{label} {status}", callback_data=f"buy_{username}")])
+    await callback.message.answer(get_text(callback.from_user.id, "available_usernames"), reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons))
+
+# ====== عند اختيار يوزر ======
+@router.callback_query(lambda c: c.data.startswith("buy_"))
+async def buy_handler(callback: CallbackQuery):
+    await callback.answer()
+    username = callback.data.replace("buy_", "")
+    if usernames.get(username):
+        await callback.message.answer(get_text(callback.from_user.id, "already_sold"))
+        return
+
+    confirm_keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="✅ I have paid", callback_data=f"confirm_{username}")],
+        [InlineKeyboardButton(text="❌ Cancel", callback_data=f"cancel_{username}")]
+    ])
+
+    text = get_text(callback.from_user.id, "select_username", username=username, wallet=TON_WALLET)
+    await callback.message.answer(text, reply_markup=confirm_keyboard)
+
+# ====== تأكيد الدفع ======
+@router.callback_query(lambda c: c.data.startswith("confirm_"))
+async def confirm_payment(callback: CallbackQuery):
+    await callback.answer()
+    username = callback.data.replace("confirm_", "")
+
+    if usernames.get(username):
+        await callback.message.answer("⚠️ This username was already marked as sold.")
+        return
+
+    usernames[username] = True
+    save_usernames()
+
+    buyer = callback.from_user.username or f"ID:{callback.from_user.id}"
+    time_now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    sales_log.append({
+        "username": username,
+        "buyer": buyer,
+        "time": time_now
+    })
+    save_sales_log()
+
+    await callback.message.answer(get_text(callback.from_user.id, "confirm_payment"))
+    await bot.send_message(OWNER_ID, f"📢 Buyer @{buyer} confirmed payment for {username} at {time_now}.")
+
+# ====== إلغاء الطلب ======
+@router.callback_query(lambda c: c.data.startswith("cancel_"))
+async def cancel_handler(callback: CallbackQuery):
+    await callback.answer()
+    username = callback.data.replace("cancel_", "")
+    await callback.message.answer(get_text(callback.from_user.id, "cancelled", username=username))
+
+# ====== أمر /add ======
+@router.message(Command("add"))
+async def add_username_handler(message: types.Message):
+    if message.from_user.id != OWNER_ID:
+        return
+
+    parts = message.text.strip().split()
+    if len(parts) != 2 or not parts[1].startswith("@"):
+        await message.answer(get_text(message.from_user.id, "add_usage"))
+        return
+
+    new_username = parts[1]
+    if new_username in usernames:
+        await message.answer(get_text(message.from_user.id, "username_exists"))
+    else:
+        usernames[new_username] = False
+        save_usernames()
+        await message.answer(get_text(message.from_user.id, "username_added", username=new_username))
+
+# ====== أمر /remove ======
+@router.message(Command("remove"))
+async def remove_username_handler(message: types.Message):
+    if message.from_user.id != OWNER_ID:
+        return
+
+    parts = message.text.strip().split()
+    if len(parts) != 2 or not parts[1].startswith("@"):
+        await message.answer(get_text(message.from_user.id, "remove_usage"))
+        return
+
+    target_username = parts[1]
+    if target_username in usernames:
+        del usernames[target_username]
+        save_usernames()
+        await message.answer(get_text(message.from_user.id, "username_removed", username=target_username))
+    else:
+        await message.answer(get_text(message.from_user.id, "username_not_found"))
+
+# ====== تسجيل الراوتر ======
+dp.include_router(router)
+
+# ====== تشغيل البوت ======
+async def main():
+    await dp.start_polling(bot)
+
+if __name__ == "__main__":
+    asyncio.run(main())from aiogram import Bot, Dispatcher, types, Router
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
+from aiogram.client.bot import DefaultBotProperties
+from aiogram.enums.parse_mode import ParseMode
+from aiogram.filters import Command
+from aiogram.fsm.storage.memory import MemoryStorage
+import asyncio
+import json
+import os
+from datetime import datetime
+
+# ====== إعداد البوت ======
+TOKEN = "7709394502:AAEK2jdeiDFhMJkpwaw4AN9_TfcVCDydUpM"
+OWNER_ID = 7928004645
+TON_WALLET = "UQAvKW2nLoNs3Tj2P_ZB-yZSH8FzrBcPxlDT0UoZJJjj3h8l"
+
+# ====== ملفات البيانات ======
+USERNAMES_FILE = "usernames.json"
+SALES_LOG_FILE = "sales_log.json"
+
+default_usernames = {
+    "@btcfx3": False,
+    "@btcfx5": False,
+    "@usdex1": False,
+    "@ethnx1": False,
+    "@euros3": False,
+    "@cpius1": False,
+    "@purr3": False,
+    "@Pufi3": False,
+    "@Moch5": False,
+}
+
+# ====== تحميل البيانات ======
+if os.path.exists(USERNAMES_FILE):
+    with open(USERNAMES_FILE, "r") as f:
+        usernames = json.load(f)
+else:
+    usernames = default_usernames.copy()
+
+if os.path.exists(SALES_LOG_FILE):
+    with open(SALES_LOG_FILE, "r") as f:
+        sales_log = json.load(f)
+else:
+    sales_log = []
+
+def save_usernames():
+    with open(USERNAMES_FILE, "w") as f:
+        json.dump(usernames, f)
+
+def save_sales_log():
+    with open(SALES_LOG_FILE, "w") as f:
+        json.dump(sales_log, f, indent=2)
+
+# ====== إعداد البوت والراوتر ======
+bot = Bot(token=TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
+dp = Dispatcher(storage=MemoryStorage())
+router = Router()
+
+# ====== تخزين لغات المستخدمين مؤقتاً ======
+user_languages = {}
+
+# ====== نصوص باللغتين ======
+texts = {
+    "en": {
+        "welcome": "👋 Welcome! You can purchase available usernames from the seller using this bot.",
+        "choose_lang": "👋 Please choose your language or continue:",
+        "commission": "💰 The seller's price is: <b>30 TON</b> per username.\nPlease make sure to pay before confirming.",
+        "available_usernames": "🧾 Available usernames:",
+        "already_sold": "❌ Sorry, this username has already been sold.",
+        "select_username": "💼 You selected <b>{username}</b>\n\nPlease send <b>30 TON</b> to the seller's wallet:\n<code>{wallet}</code>\n\nAfter sending the payment, click <b>'I have paid'</b> to notify the seller.",
+        "confirm_payment": "✅ Payment confirmed. The seller has been notified.",
+        "cancelled": "❌ You have canceled the request for {username}.",
+        "add_usage": "❗ Usage: /add @username",
+        "remove_usage": "❗ Usage: /remove @username",
+        "username_exists": "⚠️ Username already exists.",
+        "username_added": "✅ Username {username} added.",
+        "username_removed": "🗑️ Username {username} removed.",
+        "username_not_found": "⚠️ Username not found.",
+        "language_set_en": "✅ Language set to English.",
+        "language_set_ar": "✅ تم تغيير اللغة إلى العربية.",
+    },
+    "ar": {
+        "welcome": "👋 أهلاً! يمكنك شراء أسماء المستخدمين المتاحة من البائع عبر هذا البوت.",
+        "choose_lang": "👋 الرجاء اختيار اللغة أو المتابعة:",
+        "commission": "💰 سعر البائع هو: <b>30 TON</b> لكل اسم مستخدم.\nيرجى التأكد من الدفع قبل التأكيد.",
+        "available_usernames": "🧾 أسماء المستخدمين المتاحة:",
+        "already_sold": "❌ عذراً، هذا الاسم تم بيعه بالفعل.",
+        "select_username": "💼 لقد اخترت <b>{username}</b>\n\nيرجى إرسال <b>30 TON</b> إلى محفظة البائع:\n<code>{wallet}</code>\n\nبعد الدفع، اضغط على <b>'تم الدفع'</b> لإبلاغ البائع.",
+        "confirm_payment": "✅ تم تأكيد الدفع. تم إبلاغ البائع.",
+        "cancelled": "❌ لقد ألغيت الطلب لـ {username}.",
+        "add_usage": "❗ الاستخدام: /add @username",
+        "remove_usage": "❗ الاستخدام: /remove @username",
+        "username_exists": "⚠️ الاسم موجود مسبقاً.",
+        "username_added": "✅ تم إضافة الاسم {username}.",
+        "username_removed": "🗑️ تم حذف الاسم {username}.",
+        "username_not_found": "⚠️ الاسم غير موجود.",
+        "language_set_en": "✅ Language set to English.",
+        "language_set_ar": "✅ تم تغيير اللغة إلى العربية.",
+    }
+}
+
+def get_text(user_id, key, **kwargs):
+    lang = user_languages.get(user_id, "en")
+    return texts[lang][key].format(**kwargs)
+
+# ====== /start مع اختيار اللغة ======
+@router.message(Command("start"))
+async def start_handler(message: types.Message):
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [
+            InlineKeyboardButton(text="🇺🇸 English", callback_data="set_lang_en"),
+            InlineKeyboardButton(text="🇸🇦 العربية", callback_data="set_lang_ar")
+        ],
+        [InlineKeyboardButton(text="🛒 Buy Usernames", callback_data="buy_usernames")],
+        [InlineKeyboardButton(text="📊 Check Commission", callback_data="commission")]
+    ])
+    await message.answer(get_text(message.from_user.id, "choose_lang"), reply_markup=keyboard)
+
+# ====== تغيير اللغة ======
+@router.callback_query(lambda c: c.data == "set_lang_en")
+async def set_lang_en(callback: CallbackQuery):
+    user_languages[callback.from_user.id] = "en"
+    await callback.answer()
+    await callback.message.answer(texts["en"]["language_set_en"])
+
+@router.callback_query(lambda c: c.data == "set_lang_ar")
+async def set_lang_ar(callback: CallbackQuery):
+    user_languages[callback.from_user.id] = "ar"
+    await callback.answer()
+    await callback.message.answer(texts["ar"]["language_set_ar"])
+
+# ====== العمولة ======
+@router.callback_query(lambda c: c.data == "commission")
+async def commission_handler(callback: CallbackQuery):
+    await callback.answer()
+    await callback.message.answer(get_text(callback.from_user.id, "commission"))
+
+# ====== عرض اليوزرات ======
+@router.callback_query(lambda c: c.data == "buy_usernames")
+async def show_usernames(callback: CallbackQuery):
+    await callback.answer()
+    buttons = []
+    for username, sold in usernames.items():
+        label = f"{username} (SOLD)" if sold else username
+        status = "❌" if sold else "✅"
+        buttons.append([InlineKeyboardButton(text=f"{label} {status}", callback_data=f"buy_{username}")])
+    await callback.message.answer(get_text(callback.from_user.id, "available_usernames"), reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons))
+
+# ====== عند اختيار يوزر ======
+@router.callback_query(lambda c: c.data.startswith("buy_"))
+async def buy_handler(callback: CallbackQuery):
+    await callback.answer()
+    username = callback.data.replace("buy_", "")
+    if usernames.get(username):
+        await callback.message.answer(get_text(callback.from_user.id, "already_sold"))
+        return
+
+    confirm_keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="✅ I have paid", callback_data=f"confirm_{username}")],
+        [InlineKeyboardButton(text="❌ Cancel", callback_data=f"cancel_{username}")]
+    ])
+
+    text = get_text(callback.from_user.id, "select_username", username=username, wallet=TON_WALLET)
+    await callback.message.answer(text, reply_markup=confirm_keyboard)
+
+# ====== تأكيد الدفع ======
+@router.callback_query(lambda c: c.data.startswith("confirm_"))
+async def confirm_payment(callback: CallbackQuery):
+    await callback.answfrom aiogram import Bot, Dispatcher, types, Router
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
+from aiogram.client.bot import DefaultBotProperties
+from aiogram.enums.parse_mode import ParseMode
+from aiogram.filters import Command
+from aiogram.fsm.storage.memory import MemoryStorage
+import asyncio
+import json
+import os
+from datetime import datetime
+
+# ====== إعداد البوت ======
+TOKEN = "7709394502:AAEK2jdeiDFhMJkpwaw4AN9_TfcVCDydUpM"
+OWNER_ID = 7928004645
+TON_WALLET = "UQAvKW2nLoNs3Tj2P_ZB-yZSH8FzrBcPxlDT0UoZJJjj3h8l"
+
+# ====== ملفات البيانات ======
+USERNAMES_FILE = "usernames.json"
+SALES_LOG_FILE = "sales_log.json"
+
+default_usernames = {
+    "@btcfx3": False,
+    "@btcfx5": False,
+    "@usdex1": False,
+    "@ethnx1": False,
+    "@euros3": False,
+    "@cpius1": False,
+    "@purr3": False,
+    "@Pufi3": False,
+    "@Moch5": False,
+}
+
+# ====== تحميل البيانات ======
+if os.path.exists(USERNAMES_FILE):
+    with open(USERNAMES_FILE, "r") as f:
+        usernames = json.load(f)
+else:
+    usernames = default_usernames.copy()
+
+if os.path.exists(SALES_LOG_FILE):
+    with open(SALES_LOG_FILE, "r") as f:
+        sales_log = json.load(f)
+else:
+    sales_log = []
+
+def save_usernames():
+    with open(USERNAMES_FILE, "w") as f:
+        json.dump(usernames, f)
+
+def save_sales_log():
+    with open(SALES_LOG_FILE, "w") as f:
+        json.dump(sales_log, f, indent=2)
+
+# ====== إعداد البوت والراوتر ======
+bot = Bot(token=TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
+dp = Dispatcher(storage=MemoryStorage())
+router = Router()
+
+# ====== تخزين لغات المستخدمين مؤقتاً ======
+user_languages = {}
+
+# ====== نصوص باللغتين ======
+texts = {
+    "en": {
+        "welcome": "👋 Welcome! You can purchase available usernames from the seller using this bot.",
+        "choose_lang": "👋 Please choose your language or continue:",
+        "commission": "💰 The seller's price is: <b>30 TON</b> per username.\nPlease make sure to pay before confirming.",
+        "available_usernames": "🧾 Available usernames:",
+        "already_sold": "❌ Sorry, this username has already been sold.",
+        "select_username": "💼 You selected <b>{username}</b>\n\nPlease send <b>30 TON</b> to the seller's wallet:\n<code>{wallet}</code>\n\nAfter sending the payment, click <b>'I have paid'</b> to notify the seller.",
+        "confirm_payment": "✅ Payment confirmed. The seller has been notified.",
+        "cancelled": "❌ You have canceled the request for {username}.",
+        "add_usage": "❗ Usage: /add @username",
+        "remove_usage": "❗ Usage: /remove @username",
+        "username_exists": "⚠️ Username already exists.",
+        "username_added": "✅ Username {username} added.",
+        "username_removed": "🗑️ Username {username} removed.",
+        "username_not_found": "⚠️ Username not found.",
+        "language_set_en": "✅ Language set to English.",
+        "language_set_ar": "✅ تم تغيير اللغة إلى العربية.",
+    },
+    "ar": {
+        "welcome": "👋 أهلاً! يمكنك شراء أسماء المستخدمين المتاحة من البائع عبر هذا البوت.",
+        "choose_lang": "👋 الرجاء اختيار اللغة أو المتابعة:",
+        "commission": "💰 سعر البائع هو: <b>30 TON</b> لكل اسم مستخدم.\nيرجى التأكد من الدفع قبل التأكيد.",
+        "available_usernames": "🧾 أسماء المستخدمين المتاحة:",
+        "already_sold": "❌ عذراً، هذا الاسم تم بيعه بالفعل.",
+        "select_username": "💼 لقد اخترت <b>{username}</b>\n\nيرجى إرسال <b>30 TON</b> إلى محفظة البائع:\n<code>{wallet}</code>\n\nبعد الدفع، اضغط على <b>'تم الدفع'</b> لإبلاغ البائع.",
+        "confirm_payment": "✅ تم تأكيد الدفع. تم إبلاغ البائع.",
+        "cancelled": "❌ لقد ألغيت الطلب لـ {username}.",
+        "add_usage": "❗ الاستخدام: /add @username",
+        "remove_usage": "❗ الاستخدام: /remove @username",
+        "username_exists": "⚠️ الاسم موجود مسبقاً.",
+        "username_added": "✅ تم إضافة الاسم {username}.",
+        "username_removed": "🗑️ تم حذف الاسم {username}.",
+        "username_not_found": "⚠️ الاسم غير موجود.",
+        "language_set_en": "✅ Language set to English.",
+        "language_set_ar": "✅ تم تغيير اللغة إلى العربية.",
+    }
+}
+
+def get_text(user_id, key, **kwargs):
+    lang = user_languages.get(user_id, "en")
+    return texts[lang][key].format(**kwargs)
+
+# ====== /start مع اختيار اللغة ======
+@router.message(Command("start"))
+async def start_handler(message: types.Message):
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [
+            InlineKeyboardButton(text="🇺🇸 English", callback_data="set_lang_en"),
+            InlineKeyboardButton(text="🇸🇦 العربية", callback_data="set_lang_ar")
+        ],
+        [InlineKeyboardButton(text="🛒 Buy Usernames", callback_data="buy_usernames")],
+        [InlineKeyboardButton(text="📊 Check Commission", callback_data="commission")]
+    ])
+    await message.answer(get_text(message.from_user.id, "choose_lang"), reply_markup=keyboard)
+
+# ====== تغيير اللغة ======
+@router.callback_query(lambda c: c.data == "set_lang_en")
+async def set_lang_en(callback: CallbackQuery):
+    user_languages[callback.from_user.id] = "en"
+    await callback.answer()
+    await callback.message.answer(texts["en"]["language_set_en"])
+
+@router.callback_query(lambda c: c.data == "set_lang_ar")
+async def set_lang_ar(callback: CallbackQuery):
+    user_languages[callback.from_user.id] = "ar"
+    await callback.answer()
+    await callback.message.answer(texts["ar"]["language_set_ar"])
+
+# ====== العمولة ======
+@router.callback_query(lambda c: c.data == "commission")
+async def commission_handler(callback: CallbackQuery):
+    await callback.answer()
+    await callback.message.answer(get_text(callback.from_user.id, "commission"))
+
+# ====== عرض اليوزرات ======
+@router.callback_query(lambda c: c.data == "buy_usernames")
+async def show_usernames(callback: CallbackQuery):
+    await callback.answer()
+    buttons = []
+    for username, sold in usernames.items():
+        label = f"{username} (SOLD)" if sold else username
+        status = "❌" if sold else "✅"
+        buttons.append([InlineKeyboardButton(text=f"{label} {status}", callback_data=f"buy_{username}")])
+    await callback.message.answer(get_text(callback.from_user.id, "available_usernames"), reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons))
+
+# ====== عند اختيار يوزر ======
+@router.callback_query(lambda c: c.data.startswith("buy_"))
+async def buy_handler(callback: CallbackQuery):
+    await callback.answer()
+    username = callback.data.replace("buy_", "")
+    if usernames.get(username):
+        await callback.message.answer(get_text(callback.from_user.id, "already_sold"))
+        return
+
+    confirm_keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="✅ I have paid", callback_data=f"confirm_{username}")],
+        [InlineKeyboardButton(text="❌ Cancel", callback_data=f"cancel_{username}")]
+    ])
+
+    text = get_text(callback.from_user.id, "select_username", username=username, wallet=TON_WALLET)
+    await callback.message.answer(text, reply_markup=confirm_keyboard)
+
+# ====== تأكيد الدفع ======
+@router.callback_query(lambda c: c.data.startswith("confirm_"))
+async def confirm_payment(callback: CallbackQuery):
+    await callback.answer()
+    username = callback.data.replace("confirm_", "")
+
+    if usernames.get(username):
+        await callback.message.answer("⚠️ This username was already marked as sold.")
+        return
+
+    usernames[username] = True
+    save_usernames()
+
+    buyer = callback.from_user.username or f"ID:{callback.from_user.id}"
+    time_now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    sales_log.append({
+        "username": username,
+        "buyer": buyer,
+        "time": time_now
+    })
+    save_sales_log()
+
+    await callback.message.answer(get_text(callback.from_user.id, "confirm_payment"))
+    await bot.send_message(OWNER_ID, f"📢 Buyer @{buyer} confirmed payment for {username} at {time_now}.")
+
+# ====== إلغاء الطلب ======
+@router.callback_query(lambda c: c.data.startswith("cancel_"))
+async def cancel_handler(callback: CallbackQuery):
+    await callback.answer()
+    username = callback.data.replace("cancel_", "")
+    await callback.message.answer(get_text(callback.from_user.id, "cancelled", username=username))
+
+# ====== أمر /add ======
+@router.message(Command("add"))
+async def add_username_handler(message: types.Message):
+    if message.from_user.id != OWNER_ID:
+        return
+
+    parts = message.text.strip().split()
+    if len(parts) != 2 or not parts[1].startswith("@"):
+        await message.answer(get_text(message.from_user.id, "add_usage"))
+        return
+
+    new_username = parts[1]
+    if new_username in usernames:
+        await message.answer(get_text(message.from_user.id, "username_exists"))
+    else:
+        usernames[new_username] = False
+        save_usernames()
+        await message.answer(get_text(message.from_user.id, "username_added", username=new_username))
+
+# ====== أمر /remove ======
+@router.message(Command("remove"))
+async def remove_username_handler(message: types.Message):
+    if message.from_user.id != OWNER_ID:
+        return
+
+    parts = message.text.strip().split()
+    if len(parts) != 2 or not parts[1].startswith("@"):
+        await message.answer(get_text(message.from_user.id, "remove_usage"))
+        return
+
+    target_username = parts[1]
+    if target_username in usernames:
+        del usernames[target_username]
+        save_usernames()
+        await message.answer(get_text(message.from_user.id, "username_removed", username=target_username))
+    else:
+        await message.answer(get_text(message.from_user.id, "username_not_found"))
+
+# ====== تسجيل الراوتر ======
+dp.include_router(router)
+
+# ====== تشغيل البوت ======
+async def main():
+    await dp.start_polling(bot)
+
+if __name__ == "__main__":
+    asyncio.run(main())from aiogram import Bot, Dispatcher, types, Router
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
+from aiogram.client.bot import DefaultBotProperties
+from aiogram.enums.parse_mode import ParseMode
+from aiogram.filters import Command
+from aiogram.fsm.storage.memory import MemoryStorage
+import asyncio
+import json
+import os
+from datetime import datetime
+
+# ====== إعداد البوت ======
+TOKEN = "7709394502:AAEK2jdeiDFhMJkpwaw4AN9_TfcVCDydUpM"
+OWNER_ID = 7928004645
+TON_WALLET = "UQAvKW2nLoNs3Tj2P_ZB-yZSH8FzrBcPxlDT0UoZJJjj3h8l"
+
+# ====== ملفات البيانات ======
+USERNAMES_FILE = "usernames.json"
+SALES_LOG_FILE = "sales_log.json"
+
+default_usernames = {
+    "@btcfx3": False,
+    "@btcfx5": False,
+    "@usdex1": False,
+    "@ethnx1": False,
+    "@euros3": False,
+    "@cpius1": False,
+    "@purr3": False,
+    "@Pufi3": False,
+    "@Moch5": False,
+}
+
+# ====== تحميل البيانات ======
+if os.path.exists(USERNAMES_FILE):
+    with open(USERNAMES_FILE, "r") as f:
+        usernames = json.load(f)
+else:
+    usernames = default_usernames.copy()
+
+if os.path.exists(SALES_LOG_FILE):
+    with open(SALES_LOG_FILE, "r") as f:
+        sales_log = json.load(f)
+else:
+    sales_log = []
+
+def save_usernames():
+    with open(USERNAMES_FILE, "w") as f:
+        json.dump(usernames, f)
+
+def save_sales_log():
+    with open(SALES_LOG_FILE, "w") as f:
+        json.dump(sales_log, f, indent=2)
+
+# ====== إعداد البوت والراوتر ======
+bot = Bot(token=TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
+dp = Dispatcher(storage=MemoryStorage())
+router = Router()
+
+# ====== تخزين لغات المستخدمين مؤقتاً ======
+user_languages = {}
+
+# ====== نصوص باللغتين ======
+texts = {
+    "en": {
+        "welcome": "👋 Welcome! You can purchase available usernames from the seller using this bot.",
+        "choose_lang": "👋 Please choose your language or continue:",
+        "commission": "💰 The seller's price is: <b>30 TON</b> per username.\nPlease make sure to pay before confirming.",
+        "available_usernames": "🧾 Available usernames:",
+        "already_sold": "❌ Sorry, this username has already been sold.",
+        "select_username": "💼 You selected <b>{username}</b>\n\nPlease send <b>30 TON</b> to the seller's wallet:\n<code>{wallet}</code>\n\nAfter sending the payment, click <b>'I have paid'</b> to notify the seller.",
+        "confirm_payment": "✅ Payment confirmed. The seller has been notified.",
+        "cancelled": "❌ You have canceled the request for {username}.",
+        "add_usage": "❗ Usage: /add @username",
+        "remove_usage": "❗ Usage: /remove @username",
+        "username_exists": "⚠️ Username already exists.",
+        "username_added": "✅ Username {username} added.",
+        "username_removed": "🗑️ Username {username} removed.",
+        "username_not_found": "⚠️ Username not found.",
+        "language_set_en": "✅ Language set to English.",
+        "language_set_ar": "✅ تم تغيير اللغة إلى العربية.",
+    },
+    "ar": {
+        "welcome": "👋 أهلاً! يمكنك شراء أسماء المستخدمين المتاحة من البائع عبر هذا البوت.",
+        "choose_lang": "👋 الرجاء اختيار اللغة أو المتابعة:",
+        "commission": "💰 سعر البائع هو: <b>30 TON</b> لكل اسم مستخدم.\nيرجى التأكد من الدفع قبل التأكيد.",
+        "available_usernames": "🧾 أسماء المستخدمين المتاحة:",
+        "already_sold": "❌ عذراً، هذا الاسم تم بيعه بالفعل.",
+        "select_username": "💼 لقد اخترت <b>{username}</b>\n\nيرجى إرسال <b>30 TON</b> إلى محفظة البائع:\n<code>{wallet}</code>\n\nبعد الدفع، اضغط على <b>'تم الدفع'</b> لإبلاغ البائع.",
+        "confirm_payment": "✅ تم تأكيد الدفع. تم إبلاغ البائع.",
+        "cancelled": "❌ لقد ألغيت الطلب لـ {username}.",
+        "add_usage": "❗ الاستخدام: /add @username",
+        "remove_usage": "❗ الاستخدام: /remove @username",
+        "username_exists": "⚠️ الاسم موجود مسبقاً.",
+        "username_added": "✅ تم إضافة الاسم {username}.",
+        "username_removed": "🗑️ تم حذف الاسم {username}.",
+        "username_not_found": "⚠️ الاسم غير موجود.",
+        "language_set_en": "✅ Language set to English.",
+        "language_set_ar": "✅ تم تغيير اللغة إلى العربية.",
+    }
+}
+
+def get_text(user_id, key, **kwargs):
+    lang = user_languages.get(user_id, "en")
+    return texts[lang][key].format(**kwargs)
+
+# ====== /start مع اختيار اللغة ======
+@router.message(Command("start"))
+async def start_handler(message: types.Message):
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [
+            InlineKeyboardButton(text="🇺🇸 English", callback_data="set_lang_en"),
+            InlineKeyboardButton(text="🇸🇦 العربية", callback_data="set_lang_ar")
+        ],
+        [InlineKeyboardButton(text="🛒 Buy Usernames", callback_data="buy_usernames")],
+        [InlineKeyboardButton(text="📊 Check Commission", callback_data="commission")]
+    ])
+    await message.answer(get_text(message.from_user.id, "choose_lang"), reply_markup=keyboard)
+
+# ====== تغيير اللغة ======
+@router.callback_query(lambda c: c.data == "set_lang_en")
+async def set_lang_en(callback: CallbackQuery):
+    user_languages[callback.from_user.id] = "en"
+    await callback.answer()
+    await callback.message.answer(texts["en"]["language_set_en"])
+
+@router.callback_query(lambda c: c.data == "set_lang_ar")
+async def set_lang_ar(callback: CallbackQuery):
+    user_languages[callback.from_user.id] = "ar"
+    await callback.answer()
+    await callback.message.answer(texts["ar"]["language_set_ar"])
+
+# ====== العمولة ======
+@router.callback_query(lambda c: c.data == "commission")
+async def commission_handler(callback: CallbackQuery):
+    await callback.answer()
+    await callback.message.answer(get_text(callback.from_user.id, "commission"))
+
+# ====== عرض اليوزرات ======
+@router.callback_query(lambda c: c.data == "buy_usernames")
+async def show_usernames(callback: CallbackQuery):
+    await callback.answer()
+    buttons = []
+    for username, sold in usernames.items():
+        label = f"{username} (SOLD)" if sold else username
+        status = "❌" if sold else "✅"
+        buttons.append([InlineKeyboardButton(text=f"{label} {status}", callback_data=f"buy_{username}")])
+    await callback.message.answer(get_text(callback.from_user.id, "available_usernames"), reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons))
+
+# ====== عند اختيار يوزر ======
+@router.callback_query(lambda c: c.data.startswith("buy_"))
+async def buy_handler(callback: CallbackQuery):
+    await callback.answer()
+    username = callback.data.replace("buy_", "")
+    if usernames.get(username):
+        await callback.message.answer(get_text(callback.from_user.id, "already_sold"))
+        return
+
+    confirm_keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="✅ I have paid", callback_data=f"confirm_{username}")],
+        [InlineKeyboardButton(text="❌ Cancel", callback_data=f"cancel_{username}")]
+    ])
+
+    text = get_text(callback.from_user.id, "select_username", username=username, wallet=TON_WALLET)
+    await callback.message.answer(text, reply_markup=confirm_keyboard)
+
+# ====== تأكيد الدفع ======
+@router.callback_query(lambda c: c.data.startswith("confirm_"))
+async def confirm_payment(callback: CallbackQuery):
+    await callback.answer()
+    username = callback.data.replace("confirm_", "")
+
+    if usernames.get(username):
+        await callback.message.answer("⚠️ This username was already marked as sold.")
+        return
+
+    usernames[username] = True
+    save_usernames()
+
+    buyer = callback.from_user.username or f"ID:{callback.from_user.id}"
+    time_now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    sales_log.append({
+        "username": username,
+        "buyer": buyer,
+        "time": time_now
+    })
+    save_sales_log()
+
+    await callback.message.answer(get_text(callback.from_user.id, "confirm_payment"))
+    await bot.send_message(OWNER_ID, f"📢 Buyer @{buyer} confirmed payment for {username} at {time_now}.")
+
+# ====== إلغاء الط ======
+@router.callback_query(lambda c: c.data.startswith("cancel_"))
+async def cancel_handler(callback: CallbackQuery):
+    await callback.answer()
+    userom aiogram import Bot, Dispatcher, types, Router
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
+from aiogram.client.bot import DefaultBotProperties
+from aiogram.enums.parse_mode import ParseMode
+from aiogram.filters import Command
+from aiogram.fsm.storage.memory import MemoryStorage
+import asyncio
+import json
+import os
+from datetime import datetime
+
+# ====== إعداد البوت ======
+TOKEN = "7709394502:AAEK2jdeiDFhMJkpwaw4AN9_TfcVCDydUpM"
+OWNER_ID = 7928004645
+TON_WALLET = "UQAvKW2nLoNs3Tj2P_ZB-yZSH8FzrBcPxlDT0UoZJJjj3h8l"
+
+# ====== ملفات البيانات ======
+USERNAMES_FILE = "usernames.json"
+SALES_LOG_FILE = "sales_log.json"
+
+default_usernames = {
+    "@btcfx3": False,
+    "@btcfx5": False,
+    "@usdex1": False,
+    "@ethnx1": False,
+    "@euros3": False,
+    "@cpius1": False,
+    "@purr3": False,
+    "@Pufi3": False,
+    "@Moch5": False,
+}
+
+# ====== تحميل البيانات ======
+if os.path.exists(USERNAMES_FILE):
+    with open(USERNAMES_FILE, "r") as f:
+        usernames = json.load(f)
+else:
+    usernames = default_usernames.copy()
+
+if os.path.exists(SALES_LOG_FILE):
+    with open(SALES_LOG_FILE, "r") as f:
+        sales_log = json.load(f)
+else:
+    sales_log = []
+
+def save_usernames():
+    with open(USERNAMES_FILE, "w") as f:
+        json.dump(usernames, f)
+
+def save_sales_log():
+    with open(SALES_LOG_FILE, "w") as f:
+        json.dump(sales_log, f, indent=2)
+
+# ====== إعداد البوت والراوتر ======
+bot = Bot(token=TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
+dp = Dispatcher(storage=MemoryStorage())
+router = Router()
+
+# ====== تخزين لغات المستخدمين مؤقتاً ======
+user_languages = {}
+
+# ====== نصوص باللغتين ======
+texts = {
+    "en": {
+        "welcome": "👋 Welcome! You can purchase available usernames from the seller using this bot.",
+        "choose_lang": "👋 Please choose your language or continue:",
+        "commission": "💰 The seller's price is: <b>30 TON</b> per username.\nPlease make sure to pay before confirming.",
+        "available_usernames": "🧾 Available usernames:",
+        "already_sold": "❌ Sorry, this username has already been sold.",
+        "select_username": "💼 You selected <b>{username}</b>\n\nPlease send <b>30 TON</b> to the seller's wallet:\n<code>{wallet}</code>\n\nAfter sending the payment, click <b>'I have paid'</b> to notify the seller.",
+        "confirm_payment": "✅ Payment confirmed. The seller has been notified.",
+        "cancelled": "❌ You have canceled the request for {username}.",
+        "add_usage": "❗ Usage: /add @username",
+        "remove_usage": "❗ Usage: /remove @username",
+        "username_exists": "⚠️ Username already exists.",
+        "username_added": "✅ Username {username} added.",
+        "username_removed": "🗑️ Username {username} removed.",
+        "username_not_found": "⚠️ Username not found.",
+        "language_set_en": "✅ Language set to English.",
+        "language_set_ar": "✅ تم تغيير اللغة إلى العربية.",
+    },
+    "ar": {
+        "welcome": "👋 أهلاً! يمكنك شراء أسماء المستخدمين المتاحة من البائع عبر هذا البوت.",
+        "choose_lang": "👋 الرجاء اختيار اللغة أو المتابعة:",
+        "commission": "💰 سعر البائع هو: <b>30 TON</b> لكل اسم مستخدم.\nيرجى التأكد من الدفع قبل التأكيد.",
+        "available_usernames": "🧾 أسماء المستخدمين المتاحة:",
+        "already_sold": "❌ عذراً، هذا الاسم تم بيعه بالفعل.",
+        "select_username": "💼 لقد اخترت <b>{username}</b>\n\nيرجى إرسال <b>30 TON</b> إلى محفظة البائع:\n<code>{wallet}</code>\n\nبعد الدفع، اضغط على <b>'تم الدفع'</b> لإبلاغ البائع.",
+        "confirm_payment": "✅ تم تأكيد الدفع. تم إبلاغ البائع.",
+        "cancelled": "❌ لقد ألغيت الطلب لـ {username}.",
+        "add_usage": "❗ الاستخدام: /add @username",
+        "remove_usage": "❗ الاستخدام: /remove @username",
+        "username_exists": "⚠️ الاسم موجود مسبقاً.",
+        "username_added": "✅ تم إضافة الاسم {username}.",
+        "username_removed": "🗑️ تم حذف الاسم {username}.",
+        "username_not_found": "⚠️ الاسم غير موجود.",
+        "language_set_en": "✅ Language set to English.",
+        "language_set_ar": "✅ تم تغيير اللغة إلى العربية.",
+    }
+}
+
+def get_text(user_id, key, **kwargs):
+    lang = user_languages.get(user_id, "en")
+    return texts[lang][key].format(**kwargs)
+
+# ====== /start مع اختيار اللغة ======
+@router.message(Command("start"))
+async def start_handler(message: types.Message):
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [
+            InlineKeyboardButton(text="🇺🇸 English", callback_data="set_lang_en"),
+            InlineKeyboardButton(text="🇸🇦 العربية", callback_data="set_lang_ar")
+        ],
+        [InlineKeyboardButton(text="🛒 Buy Usernames", callback_data="buy_usernames")],
+        [InlineKeyboardButton(text="📊 Check Commission", callback_data="commission")]
+    ])
+    await message.answer(get_text(message.from_user.id, "choose_lang"), reply_markup=keyboard)
+
+# ====== تغيير اللغة ======
+@router.callback_query(lambda c: c.data == "set_lang_en")
+async def set_lang_en(callback: CallbackQuery):
+    user_languages[callback.from_user.id] = "en"
+    await callback.answer()
+    await callback.message.answer(texts["en"]["language_set_en"])
+
+@router.callback_query(lambda c: c.data == "set_lang_ar")
+async def set_lang_ar(callback: CallbackQuery):
+    user_languages[callback.from_user.id] = "ar"
+    await callback.answer()
+    await callback.message.answer(texts["ar"]["language_set_ar"])
+
+# ====== العمولة ======
+@router.callback_query(lambda c: c.data == "commission")
+async def commission_handler(callback: CallbackQuery):
+    await callback.answer()
+    await callback.message.answer(get_text(callback.from_user.id, "commission"))
+
+# ====== عرض اليوزرات ======
+@router.callback_query(lambda c: c.data == "buy_usernames")
+async def show_usernames(callback: CallbackQuery):
+    await callback.answer()
+    buttons = []
+    for username, sold in usernames.items():
+        label = f"{username} (SOLD)" if sold else username
+        status = "❌" if sold else "✅"
+        buttons.append([InlineKeyboardButton(text=f"{label} {status}", callback_data=f"buy_{username}")])
+    await callback.message.answer(get_text(callback.from_user.id, "available_usernames"), reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons))
+
+# ====== عند اختيار يوزر ======
+@router.callback_query(lambda c: c.data.startswith("buy_"))
+async def buy_handler(callback: CallbackQuery):
+    await callback.a
